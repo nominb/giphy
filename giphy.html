@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giffy</title>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Artist Search</h1>
+
+    <!-- Music will Get Dumped Here -->
+    <div id="music-view"></div>
+
+    <!-- Rendered Buttons will get Dumped Here  -->
+    <div id="buttons-view"></div>
+
+    <form id="music-form">
+      <label for="music-input">Add an artist!</label>
+      <input type="text" id="music-input"><br>
+
+      <!-- Button triggers new music to be added -->
+      <input id="add-music" type="submit" value="Add music!">
+    </form>
+    <!-- Retrieved data will be dumped here -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+      // Initial array of artists
+      var artists = ["Beyonce", "Adele", "David Bowie", "Drake"];
+
+      // Function for dumping the JSON content for each button into the div
+      function displayMusicInfo() {
+
+        var music = $(this).attr("data-music");
+
+        // This is our API key
+        var APIKey = "lOn1sWLRxqMxlmKVDufZihiKIKN36YD8";
+
+        //URL we need to query the database
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=animals&api_key=lOn1sWLRxqMxlmKVDufZihiKIKN36YD8&limit=5";
+
+        //run AJAX call to the giphy API
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+          //after data comes back from request
+          .then(function (response) {
+            $("#artist-view").text(JSON.stringify(response));
+            console.log(response.data)
+            var results = response.data;
+            renderButtons(results);
+          })//end .then
+
+      }//end displaymusicinfo
+      // Function for displaying artist data
+      function renderButtons(results) {
+        console.log(results);
+         // Deleting the buttons info prior to adding new artists
+        $("#buttons-view").empty();
+        // Looping through the array of artists
+        for (var i = 0; i < artists.length; i++) {
+
+          //creating and sorting a div tag
+          var musicDiv = $("<div>");
+          // Then dynamically generating buttons for each artist in the array
+          var a = $("<button>");
+          // Adding a class of artist to our button
+          a.addClass("music");
+          // Adding a data-attribute
+          a.attr("data-music", artists[i]);
+          // Providing the initial button text
+          a.text(artists[i]);
+          // Adding the button to the buttons-view div
+          $("#buttons-view").append(a);
+
+          // Creating and storing an image tag
+          var musicImage = $("<img>");
+          // Setting the src attribute of the image to a property pulled off the result item
+          musicImage.attr("src", results[i].images.fixed_height.url);
+          
+          // Appending image tag to the musicDiv
+          musicDiv.append(musicImage);
+
+          // Prependng the musicDiv to the HTML page in the "#buttons-view" div
+          $("#buttons-view").prepend(musicDiv);
+           }
+          };
+
+          // This function handles events where one button is clicked
+           $("#add-music").on("click", function (event) {
+           event.preventDefault();
+
+          // This line grabs the input from the textbox
+           var music = $("#music-view").val().trim();
+          artists.push(music)
+          
+
+          // Calling displayMusicInfo which handles the processing of music array
+        displayMusicInfo();
+
+      });
+
+
+
+
+    </script>
+</body>
+
+</html>
